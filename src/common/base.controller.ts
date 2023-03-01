@@ -1,36 +1,44 @@
-import {LoggerService} from "../logger/logger.service";
-
-import {Request, Response, Router} from "express";
+import {Response, Router} from "express";
 import {IControllerRoute} from "./route.interface";
+import {ILogger} from "../logger/logger.interface";
+import {injectable} from "inversify";
 
+import "reflect-metadata"
+import {ExpressReturnType} from "../user/user.controller.interface";
+
+@injectable()
 export abstract class BaseController {
     private readonly _router: Router;
 
-    protected constructor(private logger: LoggerService) {
+    constructor(private logger: ILogger) {
         this._router = Router();
     }
 
-    get router() {
+    get router(): Router {
         return this._router;
     }
 
-    public created(res: Response) {
+    public created(res: Response): ExpressReturnType {
         return res.sendStatus(201);
     }
 
-    public send<T>(res: Response, code: number, message: T) {
+    public send<T>(res: Response, code: number, message: T): ExpressReturnType {
         res.type("application/json");
         return res.status(code).json(message)
     }
 
-    public ok<T>(res: Response, message: T) {
+    public ok<T>(res: Response, message: T): ExpressReturnType {
         return this.send<T>(res, 201, message)
     }
 
-    protected bindRoutes(routes: IControllerRoute[]) {
+    protected bindRoutes(routes: IControllerRoute[]): void {
         for (const route of routes) {
             this.logger.log(`[${route.method}] ${route.path}`);
-            this.router[route.method](route.path, route.func.bind(this));
+            const handler = route.func.bind(this);
+            const middlewares = route.middlewares?.map(m => m.execute.bind(m))
+
+            const pipeline = middlewares ? [...middlewares, handler] : handler
+            this.router[route.method](route.path, pipeline);
         }
     }
 
