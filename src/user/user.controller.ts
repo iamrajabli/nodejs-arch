@@ -21,7 +21,12 @@ export class UserController extends BaseController implements IUserController {
 
         this.bindRoutes(
             [
-                {path: "/register", func: this.register, method: "post", middlewares: [new ValidateMiddleware(UserRegisterDto)]},
+                {
+                    path: "/register",
+                    func: this.register,
+                    method: "post",
+                    middlewares: [new ValidateMiddleware(UserRegisterDto)]
+                },
                 {path: "/login", func: this.login, method: "post"},
             ]
         )
@@ -37,7 +42,7 @@ export class UserController extends BaseController implements IUserController {
             return next(new HTTPError(422, 'This user already have in system!'))
         }
 
-        this.ok(res, result)
+        this.ok(res, {email: result.email, id: result.id})
     }
 
 }

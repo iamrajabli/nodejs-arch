@@ -9,6 +9,9 @@ import {ILogger} from "./logger/logger.interface";
 import {json} from "body-parser"
 
 import "reflect-metadata"
+import {IConfigService} from "./config/config.service.interface";
+import {IExeptionFilter} from "./errors/exeption.filter.interface";
+import {PrismaService} from "./database/prisma.service";
 
 @injectable()
 export class App {
@@ -19,10 +22,12 @@ export class App {
     constructor(
         @inject(TYPES.ILogger) private logger: ILogger,
         @inject(TYPES.IUserController) private userController: UserController,
-        @inject(TYPES.ExeptionFilter) private exeptionFilter: ExeptionFilter
+        @inject(TYPES.IExeptionFilter) private exeptionFilter: IExeptionFilter,
+        @inject(TYPES.IConfigService) private configService: IConfigService,
+        @inject(TYPES.PrismaService) private prismaService: PrismaService,
     ) {
         this.app = express();
-        this.port = 8000;
+        this.port = 8001;
     }
 
     public useMiddleware(): void {
@@ -41,6 +46,7 @@ export class App {
         this.useMiddleware();
         this.useRoutes();
         this.useExeptionFilter();
+        await this.prismaService.connect();
         this.server = this.app.listen(this.port);
         this.logger.log("Server started on port => " + this.port)
     }

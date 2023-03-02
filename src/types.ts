@@ -3,5 +3,8 @@ export const TYPES = {
     ILogger: Symbol.for('ILogger'),
     IUserController: Symbol.for('IUserController'),
     IUserService: Symbol.for('IUserService'),
-    ExeptionFilter: Symbol.for('ExeptionFilter'),
+    IExeptionFilter: Symbol.for('IExeptionFilter'),
+    IConfigService: Symbol.for('IConfigService'),
+    PrismaService: Symbol.for('PrismaService'),
+    IUserRepository: Symbol.for('IUserRepository'),
 }
