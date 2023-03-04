@@ -1,5 +1,5 @@
 import {NextFunction, Response, Request} from "express";
-import {IExeptionFilter} from "./exeption.filter.interface";
+import {IExceptionFilter} from "./exception.filter.interface";
 import {HTTPError} from "./http-error.class";
 import {inject, injectable} from "inversify";
 import {TYPES} from "../types";
@@ -7,7 +7,7 @@ import {ILogger} from "../logger/logger.interface";
 import "reflect-metadata"
 
 @injectable()
-export class ExeptionFilter implements IExeptionFilter {
+export class ExceptionFilter implements IExceptionFilter {
 
     constructor(@inject(TYPES.ILogger) private logger: ILogger) { }
 
